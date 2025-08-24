@@ -13,6 +13,10 @@ on:
       registry:
         required: true
         type: string
+    outputs:
+      version:
+        description: "Semver version for image tag"
+        value: ${{ jobs.build.outputs.version }}
 
 jobs:
   setup:
