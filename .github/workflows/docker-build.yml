@@ -13,10 +13,6 @@ on:
       registry:
         required: true
         type: string
-      context_path:
-        required: false
-        type: string
-        default: .
     outputs:
       version:
         description: "Semver version for image tag"
@@ -56,7 +52,7 @@ jobs:
       - run: |
           docker build -f ${{ inputs.dockerfile }} \
             -t ${{ inputs.registry }}/${{ inputs.app_name }}:${{ needs.setup.outputs.version }} \
-            -t ${{ inputs.registry }}/${{ inputs.app_name }}:latest ${{ inputs.context_path }}
+            -t ${{ inputs.registry }}/${{ inputs.app_name }}:latest .
           docker push ${{ inputs.registry }}/${{ inputs.app_name }}:${{ needs.setup.outputs.version }}
           docker push ${{ inputs.registry }}/${{ inputs.app_name }}:latest
     outputs:
