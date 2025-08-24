@@ -39,7 +39,8 @@ jobs:
           cd argonaut-repo
           git config user.email "argonaut-bot@users.noreply.github.com"
           git config user.name "argonaut-bot"
-          sed -i "s|${{ inputs.registry }}/${{ inputs.app_name }}:.*|${{ inputs.registry }}/${{ inputs.app_name }}:${{ inputs.version }}|g" apps/${{ inputs.app_name }}/overlays/staging/patch-deployment.yaml
+          # Replace the tag for every image line in the file (avoid touching digests)
+          sed -i -E "s|(image:\\s*[^[:space:]@]+(?:/[^[:space:]@]+)+):[^[:space:]@]+|\\1:${{ inputs.version }}|g" apps/${{ inputs.app_name }}/overlays/staging/patch-deployment.yaml
           git add apps/${{ inputs.app_name }}/overlays/staging/patch-deployment.yaml
           git commit -m "Update ${{ inputs.app_name }} staging to version ${{ inputs.version }}"
           git push origin main
