@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  workflow_call:
+
+jobs:
+  ci:
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn lint
+      - run: yarn tsc --noEmit

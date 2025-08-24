@@ -1,0 +1,55 @@
+name: Docker Build & Push
+
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        required: true
+        type: string
+      dockerfile:
+        required: false
+        type: string
+        default: Dockerfile
+      registry:
+        required: true
+        type: string
+
+jobs:
+  setup:
+    runs-on: [self-hosted, linux, x64]
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: corepack enable
+      - id: version
+        run: |
+          LATEST_VERSION=$(git tag --sort=-version:refname | head -n1 || echo "0.1.0")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if [[ "$COMMIT_MSG" == *"[major]"* ]]; then
+            MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0
+          elif [[ "$COMMIT_MSG" == *"[minor]"* ]]; then
+            MINOR=$((MINOR+1)); PATCH=0
+          else
+            PATCH=$((PATCH+1))
+          fi
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+  build:
+    runs-on: [self-hosted, linux, x64]
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: |
+          docker build -f ${{ inputs.dockerfile }} \
+            -t ${{ inputs.registry }}/${{ inputs.app_name }}:${{ needs.setup.outputs.version }} \
+            -t ${{ inputs.registry }}/${{ inputs.app_name }}:latest .
+          docker push ${{ inputs.registry }}/${{ inputs.app_name }}:${{ needs.setup.outputs.version }}
+          docker push ${{ inputs.registry }}/${{ inputs.app_name }}:latest
+    outputs:
+      version: ${{ needs.setup.outputs.version }}

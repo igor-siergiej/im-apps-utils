@@ -1,0 +1,45 @@
+name: GitOps Update
+
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        required: true
+        type: string
+      registry:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+    secrets:
+      PAT_TOKEN:
+        required: true
+
+jobs:
+  update:
+    runs-on: [self-hosted, linux, x64]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Create git tag
+        run: |
+          git config --global user.email "argonaut-bot@users.noreply.github.com"
+          git config --global user.name "argonaut-bot"
+          git tag -f "${{ inputs.version }}"
+          git push --force origin "refs/tags/${{ inputs.version }}"
+
+      - name: Update ArgoCD repo
+        run: |
+          git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/igor-siergiej/argonaut.git argonaut-repo
+          cd argonaut-repo
+          git config user.email "argonaut-bot@users.noreply.github.com"
+          git config user.name "argonaut-bot"
+          sed -i "s|${{ inputs.registry }}/${{ inputs.app_name }}:.*|${{ inputs.registry }}/${{ inputs.app_name }}:${{ inputs.version }}|g" apps/${{ inputs.app_name }}/overlays/staging/patch-deployment.yaml
+          git add apps/${{ inputs.app_name }}/overlays/staging/patch-deployment.yaml
+          git commit -m "Update ${{ inputs.app_name }} staging to version ${{ inputs.version }}"
+          git push origin main
