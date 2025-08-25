@@ -13,7 +13,7 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
       actions: read
     steps:
@@ -57,7 +57,7 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.next }}
           echo "Publishing version ${VERSION}"
-          yarn workspaces foreach -A -v exec yarn version --new-version ${VERSION} --no-git-tag-version
+          yarn workspaces foreach -A -v exec npm version ${VERSION} --no-git-tag-version
 
       - name: Publish changed workspaces
         env:
