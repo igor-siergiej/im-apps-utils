@@ -15,6 +15,10 @@
     "files": [
         "build"
     ],
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
+    },
     "scripts": {
         "build": "tsup",
         "clean": "rimraf build",
