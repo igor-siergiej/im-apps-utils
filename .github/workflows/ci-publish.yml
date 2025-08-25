@@ -57,7 +57,19 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.next }}
           echo "Publishing version ${VERSION}"
-          yarn workspaces foreach -A -v exec npm version ${VERSION} --no-git-tag-version
+          # Bump root version
+          npm version ${VERSION} --no-git-tag-version
+          # Bump each workspace version without invoking Yarn per-workspace (avoids lockfile check mid-loop)
+          for pkg in packages/*; do
+            if [ -f "$pkg/package.json" ]; then
+              (cd "$pkg" && npm version ${VERSION} --no-git-tag-version)
+            fi
+          done
+
+      - name: Update lockfile after version bump
+        run: |
+          # Refresh Yarn lockfile to reflect updated versions
+          yarn install
 
       - name: Publish changed workspaces
         env:
@@ -71,7 +83,7 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.next }}
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "github-actions@noreply.github.com"
           git commit -am "chore(release): ${VERSION}" || echo "Nothing to commit"
           git tag v${VERSION}
           git push origin HEAD:$(git rev-parse --abbrev-ref HEAD)
