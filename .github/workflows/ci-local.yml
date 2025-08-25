@@ -1,0 +1,19 @@
+name: CI (local)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  ci:
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn lint
+      - run: yarn tsc --noEmit
+
+

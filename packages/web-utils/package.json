@@ -1,0 +1,30 @@
+{
+    "name": "@im-apps/web-utils",
+    "version": "0.1.0",
+    "description": "Shared web utilities for frontend apps",
+    "main": "build/index.cjs",
+    "module": "build/index.js",
+    "types": "build/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./build/index.js",
+            "require": "./build/index.cjs",
+            "types": "./build/index.d.ts"
+        }
+    },
+    "files": [
+        "build"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "rimraf build",
+        "prepack": "yarn clean && yarn build"
+    },
+    "license": "MIT",
+    "sideEffects": false,
+    "devDependencies": {
+        "rimraf": "^6.0.1",
+        "tsup": "^8.5.0",
+        "typescript": "^5.9.2"
+    }
+}

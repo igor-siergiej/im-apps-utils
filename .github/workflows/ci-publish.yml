@@ -1,0 +1,80 @@
+name: Publish (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Reuse CI
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish Packages
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Configure npm auth
+        run: |
+          npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Derive next version from existing tags
+        id: version
+        run: |
+          # Get latest tag matching v*; default to v0.0.0 if none
+          LAST_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "v0.0.0")
+          echo "Last tag: $LAST_TAG"
+          BASE=${LAST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE"
+          # Simple auto-bump: patch +1
+          NEXT="${MAJOR}.${MINOR}.$((PATCH+1))"
+          echo "next=${NEXT}" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: yarn build
+
+      - name: Bump versions across workspaces
+        run: |
+          VERSION=${{ steps.version.outputs.next }}
+          echo "Publishing version ${VERSION}"
+          yarn workspaces foreach -A -v exec yarn version --new-version ${VERSION} --no-git-tag-version
+
+      - name: Publish changed workspaces
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          yarn workspaces foreach -A -v npm publish --access public --tolerate-republish
+
+      - name: Create and push tag for this release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ steps.version.outputs.next }}
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(release): ${VERSION}" || echo "Nothing to commit"
+          git tag v${VERSION}
+          git push origin HEAD:$(git rev-parse --abbrev-ref HEAD)
+          git push origin v${VERSION}
+
+
