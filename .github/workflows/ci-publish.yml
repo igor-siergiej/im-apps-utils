@@ -69,7 +69,7 @@ jobs:
       - name: Update lockfile after version bump
         run: |
           # Refresh Yarn lockfile to reflect updated versions
-          yarn install
+          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install --mode=update-lockfile
 
       - name: Publish changed workspaces
         env:
