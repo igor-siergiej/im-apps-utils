@@ -75,7 +75,7 @@ jobs:
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          yarn workspaces foreach -A -v npm publish --access public --tolerate-republish
+          yarn workspaces foreach -A -v --no-private npm publish --access public --tolerate-republish
 
       - name: Create and push tag for this release
         env:
