@@ -3,8 +3,8 @@
 Shared utilities monorepo for IM Apps projects.
 
 Packages:
-- @im-apps/api-utils — utilities for Node/API services
-- @im-apps/web-utils — utilities for frontend web apps
+- @igor-siergiej/api-utils — utilities for Node/API services
+- @igor-siergiej/web-utils — utilities for frontend web apps
 
 ## Development
 
@@ -16,53 +16,48 @@ yarn build
 
 ## Publishing
 
-Each package is versioned and published independently.
+Publishing is automated via GitHub Actions (manual dispatch).
+
+- Where: Actions → Publish (manual) → Run workflow
+- What it does (high level):
+  - Derives the next patch version from the latest `v*` tag (or falls back to root `package.json`), ensuring uniqueness.
+  - Bumps the root and all workspace `package.json` versions to that version and commits the change.
+  - Builds all workspaces.
+  - Publishes all non-private workspaces to GitHub Packages in topological order:
+    - `yarn workspaces foreach -A --no-private --topological exec yarn npm publish --tolerate-republish`
+  - Creates and pushes a `vX.Y.Z` git tag only if all publishes succeed.
+  - If any package fails to publish, the job fails and no tag is created.
+
+Required repository secrets:
+- `PAT_TOKEN`: GitHub Personal Access Token with permission to publish to GitHub Packages (used as `PAT_TOKEN`, `NODE_AUTH_TOKEN`, and `YARN_NPM_AUTH_TOKEN`).
+
+Notes:
+- Registry is GitHub Packages (`https://npm.pkg.github.com`) and is configured via `.yarnrc.yml`.
+- Dist-tag defaults to `latest` (no custom release channel is used).
+
+### Manual local publish (optional)
+
+If you need to publish locally instead of CI, you can still run:
 
 ```bash
 # from repo root
-cd packages/api-utils && yarn version patch && yarn npm publish --access public
-cd ../web-utils && yarn version patch && yarn npm publish --access public
+cd packages/api-utils && yarn version patch && yarn npm publish
+cd ../web-utils && yarn version patch && yarn npm publish
 ```
-
-### CI Publishing
-
-Publishing is automated via GitHub Actions when you push a tag like `vX.Y.Z`, or via manual dispatch.
-
-Required repository secrets:
-- `NPM_TOKEN`: npm token with publish rights for `@im-apps/*` (Automation/Publish access).
-
-Optional:
-- Use tags (e.g. `v1.2.3`) to set the same version across all workspaces before publish.
-
-Manual run:
-- Actions → CI & Publish → Run workflow
-
-### Release Workflow (creates tag)
-
-Use the Release workflow to bump all workspace versions, commit, create a tag, and push. This tag triggers CI & Publish.
-
-Steps:
-- Go to Actions → Release (tag + push) → Run workflow
-- Enter version (e.g. 1.2.3)
-- The workflow will:
-  - yarn version across all workspaces (no tag locally)
-  - Commit the version bump
-  - Create tag v1.2.3 and push it
-  - CI & Publish picks up the tag and publishes the packages
 
 ## Usage
 
 Install in consumers (e.g. Shoppingo, jewellery-catalogue, kivo):
 
 ```bash
-yarn add @im-apps/api-utils @im-apps/web-utils
+yarn add @igor-siergiej/api-utils @igor-siergiej/web-utils
 ```
 
 Then import:
 
 ```ts
-import { createPaginatedResponse } from '@im-apps/api-utils';
-import { cn } from '@im-apps/web-utils';
+import { createPaginatedResponse } from '@igor-siergiej/api-utils';
+import { cn } from '@igor-siergiej/web-utils';
 ```
 
 

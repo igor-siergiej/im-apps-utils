@@ -1,4 +1,4 @@
-name: CI (local)
+name: CI
 
 on:
   push:
@@ -8,12 +8,7 @@ on:
 
 jobs:
   ci:
-    runs-on: [self-hosted, linux, x64]
-    steps:
-      - uses: actions/checkout@v4
-      - run: corepack enable
-      - run: yarn install --immutable
-      - run: yarn lint
-      - run: yarn tsc --noEmit
+    name: Lint and typecheck
+    uses: ./.github/workflows/ci.yml
 
 

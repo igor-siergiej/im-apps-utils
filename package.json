@@ -1,7 +1,7 @@
 {
     "name": "im-apps-utils",
     "private": true,
-    "version": "0.1.0",
+    "version": "0.0.2",
     "description": "Monorepo for shared utilities across IM Apps projects",
     "packageManager": "yarn@4.9.2",
     "workspaces": [
@@ -13,12 +13,6 @@
         "lint": "eslint . --ext .ts,.mts,.cts",
         "lint:fix": "eslint . --ext .ts,.mts,.cts --fix"
     },
-    "repository": {
-        "type": "git",
-        "url": ""
-    },
-    "author": "",
-    "license": "MIT",
     "devDependencies": {
         "@eslint/js": "^9.33.0",
         "@stylistic/eslint-plugin": "^5.2.3",

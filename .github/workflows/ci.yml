@@ -6,6 +6,8 @@ on:
 jobs:
   ci:
     runs-on: [self-hosted, linux, x64]
+    env:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable

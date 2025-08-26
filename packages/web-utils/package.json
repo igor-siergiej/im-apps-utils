@@ -1,7 +1,16 @@
 {
-    "name": "@im-apps/web-utils",
-    "version": "0.1.0",
+    "name": "@igor-siergiej/web-utils",
+    "version": "0.0.2",
     "description": "Shared web utilities for frontend apps",
+    "author": "igor-siergiej",
+    "license": "AGPL-3.0 license",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/igor-siergiej/im-apps-utils.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
     "main": "build/index.cjs",
     "module": "build/index.js",
     "types": "build/index.d.ts",
@@ -15,16 +24,11 @@
     "files": [
         "build"
     ],
-    "publishConfig": {
-        "access": "public",
-        "registry": "https://registry.npmjs.org"
-    },
     "scripts": {
         "build": "tsup",
         "clean": "rimraf build",
         "prepack": "yarn clean && yarn build"
     },
-    "license": "MIT",
     "sideEffects": false,
     "devDependencies": {
         "rimraf": "^6.0.1",
