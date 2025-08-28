@@ -3,9 +3,6 @@
     "include": [
         "src/**/*",
     ],
-    "exclude": [
-        "vitest.config.ts"
-    ],
     "compilerOptions": {
         "outDir": "build",
         "composite": false,
