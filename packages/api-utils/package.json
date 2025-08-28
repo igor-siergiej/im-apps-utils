@@ -11,13 +11,13 @@
     "publishConfig": {
         "registry": "https://npm.pkg.github.com/"
     },
-    "main": "build/index.cjs",
-    "module": "build/index.js",
+    "main": "build/index.js",
+    "module": "build/index.mjs",
     "types": "build/index.d.ts",
     "exports": {
         ".": {
-            "import": "./build/index.js",
-            "require": "./build/index.cjs",
+            "import": "./build/index.mjs",
+            "require": "./build/index.js",
             "types": "./build/index.d.ts"
         }
     },
@@ -27,12 +27,20 @@
     "scripts": {
         "build": "tsup",
         "clean": "rimraf build",
-        "prepack": "yarn clean && yarn build"
+        "prepack": "yarn clean && yarn build",
+        "test": "vitest run --coverage",
+        "test:watch": "vitest"
     },
     "sideEffects": false,
     "devDependencies": {
+        "@types/node": "^24.3.0",
+        "@vitest/coverage-v8": "^3.2.4",
         "rimraf": "^6.0.1",
         "tsup": "^8.5.0",
-        "typescript": "^5.9.2"
+        "typescript": "^5.9.2",
+        "vitest": "^3.2.4"
+    },
+    "dependencies": {
+        "mongodb": "^6.19.0"
     }
 }
