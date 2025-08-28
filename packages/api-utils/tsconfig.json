@@ -2,7 +2,9 @@
     "extends": "../../tsconfig.json",
     "include": [
         "src/**/*",
-        "tests/**/*"
+    ],
+    "exclude": [
+        "vitest.config.ts"
     ],
     "compilerOptions": {
         "outDir": "build",
