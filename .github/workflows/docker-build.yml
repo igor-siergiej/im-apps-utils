@@ -51,6 +51,7 @@ jobs:
       - run: corepack enable
       - run: |
           docker build -f ${{ inputs.dockerfile }} \
+            --build-arg PAT_TOKEN=${{ secrets.PAT_TOKEN }} \
             -t ${{ inputs.registry }}/${{ inputs.app_name }}:${{ needs.setup.outputs.version }} \
             -t ${{ inputs.registry }}/${{ inputs.app_name }}:latest .
           docker push ${{ inputs.registry }}/${{ inputs.app_name }}:${{ needs.setup.outputs.version }}
