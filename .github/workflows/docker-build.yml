@@ -63,6 +63,8 @@ jobs:
             [registry."192.168.68.54:31834"]
               http = true
               insecure = true
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
