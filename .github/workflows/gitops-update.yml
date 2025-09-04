@@ -30,17 +30,15 @@ jobs:
         run: |
           set -euo pipefail
           VERSION=${{ inputs.version }}
-          # Update root and workspace package.json versions if present
-          if [ -f package.json ]; then
-            npm version "$VERSION" --no-git-tag-version
-          fi
-          if [ -d packages ]; then
-            for pkg in packages/*; do
-              if [ -f "$pkg/package.json" ]; then
-                (cd "$pkg" && npm version "$VERSION" --no-git-tag-version)
-              fi
-            done
-          fi
+          # Use Yarn to update versions (npm doesn't support workspace:* protocol)
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+          # Root workspace
+          yarn version set "$VERSION"
+          # All workspaces
+          yarn workspaces foreach -A exec yarn version set "$VERSION"
+          # Ensure lockfile stays consistent (optional)
+          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install --mode=update-lockfile
           git config user.email "argonaut-bot@users.noreply.github.com"
           git config user.name "argonaut-bot"
           git add -A
