@@ -26,6 +26,27 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
+      - name: Bump package.json versions to match tag
+        run: |
+          set -euo pipefail
+          VERSION=${{ inputs.version }}
+          # Update root and workspace package.json versions if present
+          if [ -f package.json ]; then
+            npm version "$VERSION" --no-git-tag-version
+          fi
+          if [ -d packages ]; then
+            for pkg in packages/*; do
+              if [ -f "$pkg/package.json" ]; then
+                (cd "$pkg" && npm version "$VERSION" --no-git-tag-version)
+              fi
+            done
+          fi
+          git config user.email "argonaut-bot@users.noreply.github.com"
+          git config user.name "argonaut-bot"
+          git add -A
+          git commit -m "chore: bump package versions to $VERSION" || echo "No changes to commit"
+          git push origin HEAD:main
+
       - name: Create git tag
         run: |
           git config --global user.email "argonaut-bot@users.noreply.github.com"
