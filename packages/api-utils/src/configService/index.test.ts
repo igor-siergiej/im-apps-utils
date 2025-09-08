@@ -20,11 +20,17 @@ describe('configService', () => {
         expect(getEnv('OPTIONAL', parsers.string, 'fallback')).toBe('fallback');
     });
 
+    it('number parser throws on non-numeric input', () => {
+        process.env.BAD_NUMBER = 'abc';
+        expect(() => getEnv('BAD_NUMBER', parsers.number)).toThrow(/Expected number/);
+    });
+
     it('loadBaseConfig reads required envs', () => {
         process.env.PORT = '3000';
         process.env.CONNECTION_URI = 'mongodb://localhost:27017';
         process.env.DATABASE_NAME = 'testdb';
         const cfg = loadBaseConfig();
+
         expect(cfg).toEqual({ PORT: 3000, CONNECTION_URI: 'mongodb://localhost:27017', DATABASE_NAME: 'testdb' });
     });
 
@@ -44,6 +50,7 @@ describe('configService', () => {
         process.env.REMAPPED = 'value';
 
         const service = new ConfigService(schema);
+
         expect(service.get('NUM')).toBe(5);
         expect(service.get('FLAG')).toBe(true);
         expect(service.get('NAME')).toBe('anon');
@@ -51,6 +58,7 @@ describe('configService', () => {
         expect(service.get('REMAP')).toBe('value');
 
         const badSchema = { REQ: { parser: parsers.string } } as const;
+
         expect(() => new ConfigService(badSchema)).toThrowError(new ConfigError('REQ'));
     });
 });

@@ -14,6 +14,7 @@ export class DependencyContainer<
         if (!this.instance) {
             this.instance = new DependencyContainer<Record<string, unknown>>();
         }
+
         return this.instance as unknown as DependencyContainer<Deps2>;
     }
 
@@ -21,22 +22,27 @@ export class DependencyContainer<
         if (this.isTokenRegistered(token)) {
             throw new Error('Dependency is already registered');
         }
+
         this.constructors[token] = ctor as unknown as ConstructorOfType<unknown>;
     }
 
     public resolve<K extends keyof Deps & string>(token: K, ...args: Array<unknown>): Deps[K] {
         const existing = this.instances[token];
+
         if (existing !== undefined) {
             return existing as Deps[K];
         }
 
         const ctor = this.constructors[token] as (new (...a: Array<unknown>) => Deps[K]) | undefined;
+
         if (!ctor) {
             throw new Error(`Dependency '${String(token)}' not registered`);
         }
 
         const instance = new ctor(...args);
+
         this.instances[token] = instance as unknown;
+
         return instance as Deps[K];
     }
 

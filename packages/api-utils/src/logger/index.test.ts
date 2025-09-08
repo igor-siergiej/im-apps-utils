@@ -21,16 +21,19 @@ describe('Logger', () => {
 
     it('writes info logs with JSON payload', () => {
         const logger = new Logger();
+
         logger.info('hello', { a: 1 });
         expect(console.log).toHaveBeenCalledTimes(1);
         const payload = (console.log as any).mock.calls[0][0] as string;
         const obj = JSON.parse(payload);
+
         expect(obj).toMatchObject({ level: 'info', message: 'hello' });
         expect(obj.meta).toBeDefined();
     });
 
     it('writes warn and error logs', () => {
         const logger = new Logger();
+
         logger.warn('be careful');
         logger.error('boom', { reason: 'x' });
         expect(console.warn).toHaveBeenCalledTimes(1);

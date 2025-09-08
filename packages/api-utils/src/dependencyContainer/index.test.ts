@@ -16,6 +16,7 @@ describe('DependencyContainer', () => {
 
     it('registers and resolves singletons', () => {
         const di = DependencyContainer.getInstance<Deps>();
+
         di.registerSingleton('foo', Foo as any);
 
         const foo1 = di.resolve('foo', 1);
@@ -28,11 +29,13 @@ describe('DependencyContainer', () => {
 
     it('throws when resolving unregistered token', () => {
         const di = DependencyContainer.getInstance<Deps>();
+
         expect(() => di.resolve('foo')).toThrow(/not registered/);
     });
 
     it('prevents double registration', () => {
         const di = DependencyContainer.getInstance<Deps>();
+
         di.registerSingleton('foo', Foo as any);
         expect(() => di.registerSingleton('foo', Foo as any)).toThrow(/already registered/);
     });

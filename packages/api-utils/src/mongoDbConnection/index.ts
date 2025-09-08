@@ -1,11 +1,6 @@
 import { Collection, Db, Document, MongoClient } from 'mongodb';
 
-export type { Collection, Document } from 'mongodb';
-
-export interface MongoConfig {
-    connectionUri: string;
-    databaseName: string;
-}
+import { MongoConfig } from './types';
 
 export class MongoDbConnection<CMap extends Record<string, Document> = Record<string, Document>> {
     private client?: MongoClient;
@@ -14,9 +9,11 @@ export class MongoDbConnection<CMap extends Record<string, Document> = Record<st
 
     public async connect(configOverride?: MongoConfig): Promise<void> {
         const cfg = configOverride ?? this.config;
+
         if (!cfg) {
             throw new Error('MongoDbConnection: missing configuration');
         }
+
         if (!this.client || (configOverride && configOverride.connectionUri !== this.config?.connectionUri)) {
             this.config = cfg;
             this.client = new MongoClient(cfg.connectionUri);
@@ -35,6 +32,7 @@ export class MongoDbConnection<CMap extends Record<string, Document> = Record<st
         if (!this.databaseInstance) {
             throw new Error('MongoDbConnection: not connected');
         }
+
         return this.databaseInstance.collection<CMap[K]>(collectionName);
     }
 }

@@ -11,7 +11,9 @@ export const parsers = {
     string: (v: string) => v,
     number: (v: string) => {
         const n = Number(v);
+
         if (Number.isNaN(n)) throw new Error(`Expected number, received '${v}'`);
+
         return n;
     },
     boolean: (v: string) => v === 'true',
@@ -20,10 +22,12 @@ export const parsers = {
 
 export function getEnv<T = string>(key: string, parser: EnvParser<T> = parsers.string as EnvParser<T>, fallback?: T): T {
     const raw = process.env[key];
+
     if (raw === undefined || raw === null || raw === '') {
         if (fallback !== undefined) return fallback;
         throw new ConfigError(key);
     }
+
     return parser(raw);
 }
 
@@ -56,6 +60,7 @@ export class ConfigService<S extends ConfigSchema> {
 
     constructor(schema: S) {
         const result: Partial<InferConfig<S>> = {};
+
         for (const key of Object.keys(schema) as Array<keyof S>) {
             const entry = schema[key];
             const envKey = entry.from ?? (key as string);
@@ -71,9 +76,11 @@ export class ConfigService<S extends ConfigSchema> {
                 }
             } else {
                 const parsed = entry.parser(raw as string) as InferConfig<S>[keyof InferConfig<S>];
+
                 result[key as keyof InferConfig<S>] = parsed;
             }
         }
+
         this.values = result as InferConfig<S>;
     }
 

@@ -3,6 +3,7 @@ import { ILogger } from './types';
 export class Logger implements ILogger {
     private format(level: string, message: string, meta: Array<unknown>): string {
         const logObject = { level, message, ...(meta.length > 0 && { meta }) };
+
         return JSON.stringify(logObject);
     }
 
