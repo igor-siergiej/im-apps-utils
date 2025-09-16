@@ -13,6 +13,7 @@
         "skipLibCheck": true,
         "emitDeclarationOnly": true,
         "outDir": "build",
+        "jsx": "react-jsx",
     },
     "exclude": [
         "node_modules",
