@@ -83,4 +83,16 @@ export class ObjectStoreConnection implements IBucket {
             await client.putObject(bucketName, id, data, undefined, metaHeaders);
         }
     };
+
+    public ping = async (): Promise<boolean> => {
+        const { client } = this.requireConnection();
+
+        try {
+            await client.listBuckets();
+
+            return true;
+        } catch {
+            return false;
+        }
+    };
 }

@@ -35,4 +35,18 @@ export class MongoDbConnection<CMap extends Record<string, Document> = Record<st
 
         return this.databaseInstance.collection<CMap[K]>(collectionName);
     }
+
+    public async ping(): Promise<boolean> {
+        if (!this.client) {
+            throw new Error('MongoDbConnection: not connected');
+        }
+
+        try {
+            await this.client.db().command({ ping: 1 });
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
 }
