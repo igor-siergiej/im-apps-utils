@@ -1,6 +1,6 @@
 {
     "name": "@igor-siergiej/eslint-config",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "Shared ESLint configuration for IM Apps projects",
     "main": "build/index.js",
     "module": "build/index.mjs",
