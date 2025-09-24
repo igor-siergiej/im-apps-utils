@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-import { UserInfo, UserContextType } from '../types';
+
+import { UserContextType, UserInfo } from '../types';
 import { extractUserFromToken } from '../utils';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);

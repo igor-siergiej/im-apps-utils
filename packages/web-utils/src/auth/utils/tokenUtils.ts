@@ -87,6 +87,7 @@ export const getStorageItem = (key: string, storageType: 'localStorage' | 'sessi
     if (typeof window === 'undefined') return null;
 
     const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
+
     return storage.getItem(key);
 };
 
@@ -94,6 +95,7 @@ export const setStorageItem = (key: string, value: string, storageType: 'localSt
     if (typeof window === 'undefined') return;
 
     const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
+
     storage.setItem(key, value);
 };
 
@@ -101,5 +103,6 @@ export const removeStorageItem = (key: string, storageType: 'localStorage' | 'se
     if (typeof window === 'undefined') return;
 
     const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
+
     storage.removeItem(key);
 };

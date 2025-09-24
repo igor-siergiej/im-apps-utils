@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
 import { AuthContextType } from '../types';
-import { getStorageItem, setStorageItem, removeStorageItem } from '../utils';
+import { getStorageItem, removeStorageItem, setStorageItem } from '../utils';
 import { useAuthConfig } from './AuthConfigContext';
 import { useUser } from './UserContext';
 
@@ -12,6 +13,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const [accessToken, setAccessToken] = useState<string | null>(() => {
         const stored = getStorageItem(config.accessTokenKey!, config.storageType);
+
         return stored || null;
     });
 
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = useCallback(async () => {
         try {
             const logoutEndpoint = config.endpoints?.logout || '/logout';
+
             await fetch(`${config.authUrl}${logoutEndpoint}`, {
                 method: 'POST',
                 credentials: 'include',
